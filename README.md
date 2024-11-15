@@ -1,2 +1,2 @@
-# RaytTracing
+# RayTracing
 A Ray Tracing study
