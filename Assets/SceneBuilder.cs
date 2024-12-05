@@ -9,7 +9,7 @@ public class SceneBuilder : MonoBehaviour
     private List<ObjectData> sceneObjects = new List<ObjectData>(); // List of scene objects
     void Start()
     {
-        string filePath = "/Resources/Config/Test Scene 1.txt"; // Path to the configuration file
+        string filePath = Application.dataPath+"/Resources/Config/TestScene1.txt"; // Path to the configuration file
         sceneObjects = sceneService.LoadSceneObjects(filePath); // Load objects from configuration
         BuildScene(); // Build and display the scene object
     }

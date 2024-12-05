@@ -14,6 +14,7 @@ public class SceneService
             Debug.LogError($"File not found at {filePath}");
             return sceneObjects;
         }
+        Debug.Log($"Loaded {sceneObjects.Count} objects from {filePath}");
         // Read all lines from the configuration file
         string[] lines = File.ReadAllLines(filePath);
         ObjectData currentObject = null;
@@ -23,6 +24,7 @@ public class SceneService
             // Start of a new object definition
             if (line.StartsWith("Object"))
             {
+                Debug.Log("encontrei object");
                 if (currentObject != null)
                     sceneObjects.Add(currentObject); // Add the previous object to the list
                 currentObject = new ObjectData(); // Initialize a new object
@@ -30,6 +32,7 @@ public class SceneService
             // Parse transformations for the current object
             else if (line.StartsWith("Transform"))
             {
+                Debug.Log("encontrei transform");
                 // Split values for translation, rotation, and scale
                 string[] values = line.Split(',');
                 if (values.Length == 9)
@@ -47,15 +50,15 @@ public class SceneService
             // Parse material properties for the current object
             else if (line.StartsWith("Material"))
             {
+                Debug.Log("encontrei material");
             // Split values for color, shininess, and metallic
             string[] values = line.Split(',');
-            if (values.Length == 4)
+            if (values.Length >= 5) // try values.Length >= 5 if theres errors
             {
             // Set the material properties based on parsed values
             currentObject.material = new MaterialProperties
             {
-            color = new Color(float.Parse(values[0]), float.Parse(values[1]),
-            float.Parse(values[2])),
+            color = new Color(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2])),
             shininess = float.Parse(values[3]),
             metallic = float.Parse(values[4])
             };
