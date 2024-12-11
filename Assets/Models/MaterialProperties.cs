@@ -3,9 +3,7 @@ using UnityEngine;
 [System.Serializable]
 public class MaterialProperties
 {
-    public Color color = Color.white; // Base color of the material
-    public float shininess = 0.5f; // Reflective quality of the material
-    public float metallic = 0.5f; // Metal-like quality of the material
-    
-    
+    public Color color { get; set; } = Color.white;
+    public float shininess { get; set; }
+    public float metallic { get; set; }
 }

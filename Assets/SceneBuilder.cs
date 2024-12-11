@@ -6,41 +6,81 @@ public class SceneBuilder : MonoBehaviour
 {
     public Material baseMaterial; // Base material used as a template for object materials
     private SceneService sceneService = new SceneService(); // Service instance to load scene data
-    private List<ObjectData> sceneObjects = new List<ObjectData>(); // List of scene objects
+    private SceneData sceneData; // Scene data parsed from the configuration file
+
     void Start()
     {
-        string filePath = Application.dataPath+"/Resources/Config/TestScene1.txt"; // Path to the configuration file
-        sceneObjects = sceneService.LoadSceneObjects(filePath); // Load objects from configuration
-        BuildScene(); // Build and display the scene object
+        string filePath = Application.dataPath + "/Resources/Config/TestScene1.txt"; // Path to the configuration file
+        sceneData = sceneService.LoadSceneData(filePath); // Load scene data from configuration
+        BuildScene(); // Build and display the scene
     }
-    // Method to create each object in the scene based on loaded data
+
+    // Build the scene based on the parsed data
     void BuildScene()
     {
-        foreach (var objData in sceneObjects)
+        ApplyImageSettings();
+        CreateTransformations();
+        CreateMaterials();
+        CreateCamera();
+        CreateLights();
+    }
+
+    void ApplyImageSettings()
+    {
+        Camera.main.backgroundColor = sceneData.BackgroundColor;
+        Debug.Log($"Scene resolution: {sceneData.ImageWidth}x{sceneData.ImageHeight}");
+    }
+
+    void CreateTransformations()
+    {
+        foreach (var transformation in sceneData.Transformations)
         {
-        // Create a primitive object (using a cube as an example here)
-        GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        ApplyTransformations(obj, objData.transformations); // Apply transformations to object
-        ApplyMaterial(obj, objData.material); // Apply material properties to object
+            GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube); // Placeholder for testing
+            ApplyTransformations(obj, transformation);
         }
     }
-    // Apply transformations to a given object based on the list of transformations
-    void ApplyTransformations(GameObject obj, List<Transformation> transformations)
+
+    void CreateMaterials()
     {
-        foreach (var trans in transformations)
+        foreach (var material in sceneData.Materials)
         {
-        obj.transform.Translate(trans.translation, Space.World); // Apply position
-        obj.transform.Rotate(trans.rotation); // Apply rotation
-        obj.transform.localScale = trans.scale; // Apply scale
+            Material newMaterial = new Material(baseMaterial)
+            {
+                color = material.color
+            };
+            newMaterial.SetFloat("_Shininess", material.shininess);
+            newMaterial.SetFloat("_Metallic", material.metallic);
+            Debug.Log($"Created material with color {material.color}");
         }
     }
-    // Apply material properties to the given object
-    void ApplyMaterial(GameObject obj, MaterialProperties properties)
+
+    void CreateCamera()
     {
-        Material newMaterial = new Material(baseMaterial); // Create new material from base
-        newMaterial.color = properties.color; // Set color
-        newMaterial.SetFloat("_Shininess", properties.shininess); // Set shininess
-        newMaterial.SetFloat("_Metallic", properties.metallic); // Set metallic
-        obj.GetComponent<Renderer>().material = newMaterial; // Assign material to object
+        Camera mainCamera = Camera.main;
+        if (mainCamera != null && sceneData.Camera != null)
+        {
+            mainCamera.fieldOfView = sceneData.Camera.FOV;
+            Debug.Log($"Camera FOV set to {sceneData.Camera.FOV}");
+        }
+    }
+
+    void CreateLights()
+    {
+        foreach (var lightData in sceneData.Lights)
+        {
+            GameObject lightObj = new GameObject("Light");
+            Light light = lightObj.AddComponent<Light>();
+            light.color = lightData.Color;
+            light.intensity = lightData.Intensity;
+            Debug.Log($"Created light with intensity {lightData.Intensity}");
+        }
+    }
+
+    // Apply transformations to a given object
+    void ApplyTransformations(GameObject obj, Transformation transformation)
+    {
+        obj.transform.Translate(transformation.translation, Space.World);
+        obj.transform.Rotate(transformation.rotation);
+        obj.transform.localScale = transformation.scale;
     }
 }

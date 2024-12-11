@@ -3,7 +3,7 @@ using UnityEngine;
 [System.Serializable]
 public class Transformation
 {
-    public Vector3 translation = Vector3.zero; // Position offset for the object
-    public Vector3 rotation = Vector3.zero; // Rotation values for the object
-    public Vector3 scale = Vector3.one; // Scale multiplier for the object
+    public Vector3 translation { get; set; } = Vector3.zero;
+    public Vector3 rotation { get; set; } = Vector3.zero;
+    public Vector3 scale { get; set; } = Vector3.one;
 }
